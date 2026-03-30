@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'faculty',   # Notre applicaton ajoutée ici
+    'faculty',   # Notre application ajoutée ici
+    'home_auth',  # Register the home_auth app
     'student'
 ]
 
@@ -122,3 +123,15 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Configure custom user model
+AUTH_USER_MODEL = 'home_auth.CustomUser'
+
+# Authentication backends
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',  # Default backend
+)
+
+# Login and redirect URLs
+LOGIN_URL = '/authentication/login/'
+LOGIN_REDIRECT_URL = '/dashboard/'
