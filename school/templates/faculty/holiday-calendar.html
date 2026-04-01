@@ -1,0 +1,26 @@
+{% extends 'Home/base.html' %}
+{% block title %}Holidays{% endblock %}
+{% block page_title %}Holiday Calendar{% endblock %}
+{% block body %}
+<div class="content-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h5 mb-0">Holiday Calendar</h2>
+        {% if request.user.is_admin or request.user.is_superuser %}
+            <a href="{% url 'holiday_add' %}" class="btn btn-primary btn-sm">Add Holiday</a>
+        {% endif %}
+    </div>
+    <div class="row">
+        {% for holiday in holidays %}
+            <div class="col-md-6 col-xl-4 mb-3">
+                <div class="border rounded p-3 h-100">
+                    <div class="font-weight-bold">{{ holiday.title }}</div>
+                    <div class="small text-muted">{{ holiday.start_date }} to {{ holiday.end_date }}</div>
+                    <div class="small mt-2">{{ holiday.description|default:"No description provided." }}</div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12 text-muted">No holidays available.</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

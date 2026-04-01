@@ -1,81 +1,72 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
 from django.contrib import messages
-from .models import Parent, Student
+from django.contrib.auth.decorators import login_required
+from django.db import transaction
+from django.shortcuts import get_object_or_404, redirect, render
 
-# Create your views here.
-def add_student(request):
-    if request.method == 'POST':
-        # Retrieve student data
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
-        student_id = request.POST.get('student_id')
-        gender = request.POST.get('gender')
-        date_of_birth = request.POST.get('date_of_birth')
-        student_class = request.POST.get('student_class')
-        joining_date = request.POST.get('joining_date')
-        mobile_number = request.POST.get('mobile_number')
-        admission_number = request.POST.get('admission_number')
-        section = request.POST.get('section')
-        student_image = request.FILES.get('student_image')
+from home_auth.decorators import role_required
 
-        # Retrieve parent data
-        father_name = request.POST.get('father_name')
-        father_occupation = request.POST.get('father_occupation')
-        father_mobile = request.POST.get('father_mobile')
-        father_email = request.POST.get('father_email')
-        mother_name = request.POST.get('mother_name')
-        mother_occupation = request.POST.get('mother_occupation')
-        mother_mobile = request.POST.get('mother_mobile')
-        mother_email = request.POST.get('mother_email')
-        present_address = request.POST.get('present_address')
-        permanent_address = request.POST.get('permanent_address')
+from .forms import ParentForm, StudentForm
+from .models import Student
 
-        # Create and save the parent
-        parent = Parent.objects.create(
-            father_name=father_name,
-            father_occupation=father_occupation,
-            father_mobile=father_mobile,
-            father_email=father_email,
-            mother_name=mother_name,
-            mother_occupation=mother_occupation,
-            mother_mobile=mother_mobile,
-            mother_email=mother_email,
-            present_address=present_address,
-            permanent_address=permanent_address
-        )
 
-        # Create and save the student linked to the parent
-        student = Student.objects.create(
-            first_name=first_name,
-            last_name=last_name,
-            student_id=student_id,
-            gender=gender,
-            date_of_birth=date_of_birth,
-            student_class=student_class,
-            joining_date=joining_date,
-            mobile_number=mobile_number,
-            admission_number=admission_number,
-            section=section,
-            student_image=student_image,
-            parent=parent
-        )
-
-        # Add success message and redirect to student list
-        messages.success(request, 'Student added Successfully')
-        return redirect('student_list')
-
-    else:
-        return render(request, 'students/add-student.html')
-
+@login_required
 def student_list(request):
-    return render(request, "students/students.html")
+    students = Student.objects.select_related("parent").all()
+    return render(request, "students/students.html", {"student_list": students})
 
-def edit_student(request):
-    return render(request, "students/edit-student.html")
 
-def view_student(request):
-    return render(request, "students/student-details.html")
+@role_required("admin")
+def add_student(request):
+    student_form = StudentForm(request.POST or None, request.FILES or None)
+    parent_form = ParentForm(request.POST or None)
 
-def delete_student(request):
+    if request.method == "POST" and student_form.is_valid() and parent_form.is_valid():
+        with transaction.atomic():
+            parent = parent_form.save()
+            student = student_form.save(commit=False)
+            student.parent = parent
+            student.save()
+
+        messages.success(request, f"{student.full_name} was added successfully.")
+        return redirect("student_list")
+
+    return render(
+        request,
+        "students/add-student.html",
+        {"student_form": student_form, "parent_form": parent_form},
+    )
+
+
+@login_required
+def view_student(request, student_id):
+    student = get_object_or_404(Student.objects.select_related("parent"), student_id=student_id)
+    return render(request, "students/student-details.html", {"student": student})
+
+
+@role_required("admin")
+def edit_student(request, student_id):
+    student = get_object_or_404(Student.objects.select_related("parent"), student_id=student_id)
+    student_form = StudentForm(request.POST or None, request.FILES or None, instance=student)
+    parent_form = ParentForm(request.POST or None, instance=student.parent)
+
+    if request.method == "POST" and student_form.is_valid() and parent_form.is_valid():
+        with transaction.atomic():
+            parent_form.save()
+            student_form.save()
+        messages.success(request, f"{student.full_name} was updated successfully.")
+        return redirect("view_student", student_id=student.student_id)
+
+    return render(
+        request,
+        "students/edit-student.html",
+        {"student": student, "student_form": student_form, "parent_form": parent_form},
+    )
+
+
+@role_required("admin")
+def delete_student(request, student_id):
+    student = get_object_or_404(Student.objects.select_related("parent"), student_id=student_id)
+    if request.method == "POST":
+        student.parent.delete()
+        messages.success(request, f"{student.full_name} was deleted successfully.")
     return redirect("student_list")

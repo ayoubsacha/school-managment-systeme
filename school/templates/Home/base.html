@@ -1,320 +1,139 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
-   
-   <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
-      <title>Preskool - Dashboard</title>
-      <link rel="shortcut icon" href="{%static 'assets/img/favicon.png' %}">
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;0,600;0,700;1,400&amp;display=swap">
-      <link rel="stylesheet" href="{%static 'assets/plugins/bootstrap/css/bootstrap.min.css' %}">
-      <link rel="stylesheet" href="{%static 'assets/plugins/fontawesome/css/fontawesome.min.css' %}">
-      <link rel="stylesheet" href="{%static 'assets/plugins/fontawesome/css/all.min.css' %}">
-      <link rel="stylesheet" href="{%static 'assets/css/style.css' %}">
-   </head>
-   <body>
-      <div class="main-wrapper">
-         <div class="header">
-            <div class="header-left">
-               <a href="index.html" class="logo">
-               <img src="{%static 'assets/img/logo.png' %}" alt="Logo">
-               </a>
-               <a href="index.html" class="logo logo-small">
-               <img src="{%static 'assets/img/logo-small.png' %}" alt="Logo" width="30" height="30">
-               </a>
-            </div>
-            <a href="javascript:void(0);" id="toggle_btn">
-            <i class="fas fa-align-left"></i>
-            </a>
-            <div class="top-nav-search">
-               <form>
-                  <input type="text" class="form-control" placeholder="Search here">
-                  <button class="btn" type="submit"><i class="fas fa-search"></i></button>
-               </form>
-            </div>
-            <a class="mobile_btn" id="mobile_btn">
-            <i class="fas fa-bars"></i>
-            </a>
-            <ul class="nav user-menu">
-               <li class="nav-item dropdown noti-dropdown">
-                  <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
-                   {% comment %} {% if unread_notification_count > 0 %}
-                  <i class="far fa-bell"></i> <span class="badge badge-pill">{{unread_notification_count}}</span>
-                  {% endif %} {% endcomment %}
-                  </a>
-                  <div class="dropdown-menu notifications">
-                     <div class="topnav-dropdown-header">
-                        <span class="notification-title">Notifications</span>
-                        <a href="javascript:void(0)" class="clear-noti"> Clear All </a>
-                     </div>
-                     <div class="noti-content">
-                        <ul class="notification-list">
-                           
-                        </ul>
-                     </div>
-                     <div class="topnav-dropdown-footer">
-                        <a href="#">View all Notifications</a>
-                     </div>
-                  </div>
-               </li>
-               <li class="nav-item dropdown has-arrow">
-                  <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
-                  <span class="user-img"><img class="rounded-circle" src="{% static 'assets/img/profiles/avatar-01.jpg' %}" width="31" alt="Ryan Taylor"></span>
-                  </a>
-                  <div class="dropdown-menu">
-                     <div class="user-header">
-                        <div class="avatar avatar-sm">
-                           <img src="{% static 'assets/img/profiles/avatar-01.jpg' %}" alt="User Image" class="avatar-img rounded-circle">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}School Management{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'assets/plugins/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/plugins/fontawesome/css/all.min.css' %}">
+    <style>
+        body {
+            background: #f3f5fb;
+            color: #1d2433;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+        .layout-shell {
+            min-height: 100vh;
+        }
+        .sidebar-shell {
+            background: linear-gradient(180deg, #102542 0%, #1f4e79 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+        .sidebar-shell a {
+            color: #dce8f5;
+            border-radius: 0.75rem;
+            display: block;
+            margin-bottom: 0.4rem;
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+        }
+        .sidebar-shell a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .sidebar-shell .brand {
+            color: #fff;
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            margin-bottom: 2rem;
+        }
+        .main-shell {
+            padding: 2rem;
+        }
+        .topbar-card,
+        .content-card {
+            background: #fff;
+            border: 0;
+            border-radius: 1rem;
+            box-shadow: 0 18px 45px rgba(16, 37, 66, 0.08);
+        }
+        .metric-card {
+            background: linear-gradient(135deg, #0d6efd, #4c86ff);
+            border-radius: 1rem;
+            color: #fff;
+            padding: 1.25rem;
+        }
+        .metric-card.alt {
+            background: linear-gradient(135deg, #198754, #49b97f);
+        }
+        .metric-card.gold {
+            background: linear-gradient(135deg, #f59e0b, #f97316);
+        }
+        .metric-card.rose {
+            background: linear-gradient(135deg, #dc3545, #ef476f);
+        }
+        .table thead th {
+            background: #f7f9fc;
+            border-bottom: 0;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+        .pill {
+            border-radius: 999px;
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.25rem 0.65rem;
+        }
+        .pill-blue { background: #dbeafe; color: #1d4ed8; }
+        .pill-green { background: #dcfce7; color: #15803d; }
+        .pill-amber { background: #fef3c7; color: #b45309; }
+        .pill-red { background: #fee2e2; color: #b91c1c; }
+    </style>
+</head>
+<body>
+    <div class="container-fluid layout-shell">
+        <div class="row">
+            {% if request.user.is_authenticated %}
+                <aside class="col-lg-2 col-md-3 sidebar-shell">
+                    <div class="brand">SchoolHub</div>
+                    <a href="{% url 'dashboard' %}"><i class="fas fa-chart-line mr-2"></i>Dashboard</a>
+                    <a href="{% url 'student_list' %}"><i class="fas fa-user-graduate mr-2"></i>Students</a>
+                    <a href="{% url 'teacher_list' %}"><i class="fas fa-chalkboard-teacher mr-2"></i>Teachers</a>
+                    <a href="{% url 'department_list' %}"><i class="fas fa-building mr-2"></i>Departments</a>
+                    <a href="{% url 'subject_list' %}"><i class="fas fa-book-open mr-2"></i>Subjects</a>
+                    <a href="{% url 'timetable_list' %}"><i class="fas fa-table mr-2"></i>Timetable</a>
+                    <a href="{% url 'visual_timetable' %}"><i class="fas fa-grip-horizontal mr-2"></i>Visual Timetable</a>
+                    <a href="{% url 'exam_list' %}"><i class="fas fa-file-signature mr-2"></i>Exams</a>
+                    <a href="{% url 'result_list' %}"><i class="fas fa-award mr-2"></i>Grades</a>
+                    <a href="{% url 'holiday_calendar' %}"><i class="fas fa-calendar-alt mr-2"></i>Holidays</a>
+                </aside>
+                <main class="col-lg-10 col-md-9 main-shell">
+                    <div class="topbar-card p-4 mb-4 d-flex justify-content-between align-items-center flex-wrap">
+                        <div>
+                            <h1 class="h3 mb-1">{% block page_title %}Dashboard{% endblock %}</h1>
+                            <p class="text-muted mb-0">Welcome, {{ request.user.first_name|default:request.user.email }}.</p>
                         </div>
-                        <div class="user-text">
-                           {% comment %} <h6>{{user.username}}</h6> {% endcomment %}
-                           <p class="text-muted mb-0">Administrator</p>
+                        <div class="text-right mt-3 mt-md-0">
+                            <div class="font-weight-bold">{{ request.user.role }}</div>
+                            <a href="{% url 'logout' %}" class="btn btn-outline-primary btn-sm mt-2">Logout</a>
                         </div>
-                     </div>
-                     <a class="dropdown-item" href="profile.html">My Profile</a>
-                     <a class="dropdown-item" href="inbox.html">Inbox</a>
-                     <a class="dropdown-item" href="">Logout</a>
-                  </div>
-               </li>
-            </ul>
-         </div>
-         <div class="sidebar" id="sidebar">
-            <div class="sidebar-inner slimscroll">
-               <div id="sidebar-menu" class="sidebar-menu">
-                  <ul>
-                     <li class="menu-title">
-                        <span>Main Menu</span>
-                     </li>
-                     <li class="submenu active">
-                        <a href="#"><i class="fas fa-user-graduate"></i> <span> Dashboard</span> <span class="menu-arrow"></span></a>
-                        <ul>
-                           <li><a href="index.html" class="active">Admin Dashboard</a></li>
-                           <li><a href="teacher-dashboard.html">Teacher Dashboard</a></li>
-                           <li><a href="student-dashboard.html">Student Dashboard</a></li>
-                        </ul>
-                     </li>
-                     <li class="submenu">
-                        <a href="#"><i class="fas fa-user-graduate"></i> <span> Students</span> <span class="menu-arrow"></span></a>
-                        <ul>
-                           <li><a href="{% url 'student_list' %}">Student List</a></li>
-                           <li><a href="student-details.html">Student View</a></li>
-                           <li><a href="{% url 'add_student' %}">Student Add</a></li>
-                           <li><a href="edit-student.html">Student Edit</a></li>
-                        </ul>
-                     </li>
-                     <li class="submenu">
-                        <a href="#"><i class="fas fa-chalkboard-teacher"></i> <span> Teachers</span> <span class="menu-arrow"></span></a>
-                        <ul>
-                           <li><a href="teachers.html">Teacher List</a></li>
-                           <li><a href="teacher-details.html">Teacher View</a></li>
-                           <li><a href="add-teacher.html">Teacher Add</a></li>
-                           <li><a href="edit-teacher.html">Teacher Edit</a></li>
-                        </ul>
-                     </li>
-                     <li class="submenu">
-                        <a href="#"><i class="fas fa-building"></i> <span> Departments</span> <span class="menu-arrow"></span></a>
-                        <ul>
-                           <li><a href="departments.html">Department List</a></li>
-                           <li><a href="add-department.html">Department Add</a></li>
-                           <li><a href="edit-department.html">Department Edit</a></li>
-                        </ul>
-                     </li>
-                     <li class="submenu">
-                        <a href="#"><i class="fas fa-book-reader"></i> <span> Subjects</span> <span class="menu-arrow"></span></a>
-                        <ul>
-                           <li><a href="subjects.html">Subject List</a></li>
-                           <li><a href="add-subject.html">Subject Add</a></li>
-                           <li><a href="edit-subject.html">Subject Edit</a></li>
-                        </ul>
-                     </li>
-                     <li class="menu-title">
-                        <span>Management</span>
-                     </li>
-                     <li class="submenu">
-                        <a href="#"><i class="fas fa-file-invoice-dollar"></i> <span> Accounts</span> <span class="menu-arrow"></span></a>
-                        <ul>
-                           <li><a href="fees-collections.html">Fees Collection</a></li>
-                           <li><a href="expenses.html">Expenses</a></li>
-                           <li><a href="salary.html">Salary</a></li>
-                           <li><a href="add-fees-collection.html">Add Fees</a></li>
-                           <li><a href="add-expenses.html">Add Expenses</a></li>
-                           <li><a href="add-salary.html">Add Salary</a></li>
-                        </ul>
-                     </li>
-                     <li>
-                        <a href="holiday.html"><i class="fas fa-holly-berry"></i> <span>Holiday</span></a>
-                     </li>
-                     <li>
-                        <a href="fees.html"><i class="fas fa-comment-dollar"></i> <span>Fees</span></a>
-                     </li>
-                     <li>
-                        <a href="exam.html"><i class="fas fa-clipboard-list"></i> <span>Exam list</span></a>
-                     </li>
-                     <li>
-                        <a href="event.html"><i class="fas fa-calendar-day"></i> <span>Events</span></a>
-                     </li>
-                     <li>
-                        <a href="time-table.html"><i class="fas fa-table"></i> <span>Time Table</span></a>
-                     </li>
-                     <li>
-                        <a href="library.html"><i class="fas fa-book"></i> <span>Library</span></a>
-                     </li>
-                     <li class="menu-title">
-                        <span>Pages</span>
-                     </li>
-                     <li class="submenu">
-                        <a href="#"><i class="fas fa-shield-alt"></i> <span> Authentication </span> <span class="menu-arrow"></span></a>
-                        <ul>
-                           <li><a href="">Login</a></li>
-                           <li><a href="">Register</a></li>
-                           <li><a href="">Forgot Password</a></li>
-                           <li><a href="error-404.html">Error Page</a></li>
-                        </ul>
-                     </li>
-                     <li>
-                        <a href="blank-page.html"><i class="fas fa-file"></i> <span>Blank Page</span></a>
-                     </li>
-                     <li class="menu-title">
-                        <span>Others</span>
-                     </li>
-                     <li>
-                        <a href="sports.html"><i class="fas fa-baseball-ball"></i> <span>Sports</span></a>
-                     </li>
-                     <li>
-                        <a href="hostel.html"><i class="fas fa-hotel"></i> <span>Hostel</span></a>
-                     </li>
-                     <li>
-                        <a href="transport.html"><i class="fas fa-bus"></i> <span>Transport</span></a>
-                     </li>
-                     <li class="menu-title">
-                        <span>UI Interface</span>
-                     </li>
-                     <li>
-                        <a href="components.html"><i class="fas fa-vector-square"></i> <span>Components</span></a>
-                     </li>
-                     <li class="submenu">
-                        <a href="#"><i class="fas fa-columns"></i> <span> Forms </span> <span class="menu-arrow"></span></a>
-                        <ul>
-                           <li><a href="form-basic-inputs.html">Basic Inputs </a></li>
-                           <li><a href="form-input-groups.html">Input Groups </a></li>
-                           <li><a href="form-horizontal.html">Horizontal Form </a></li>
-                           <li><a href="form-vertical.html"> Vertical Form </a></li>
-                           <li><a href="form-mask.html"> Form Mask </a></li>
-                           <li><a href="form-validation.html"> Form Validation </a></li>
-                        </ul>
-                     </li>
-                     <li class="submenu">
-                        <a href="#"><i class="fas fa-table"></i> <span> Tables </span> <span class="menu-arrow"></span></a>
-                        <ul>
-                           <li><a href="tables-basic.html">Basic Tables </a></li>
-                           <li><a href="data-tables.html">Data Table </a></li>
-                        </ul>
-                     </li>
-                     <li class="submenu">
-                        <a href="javascript:void(0);"><i class="fas fa-code"></i> <span>Multi Level</span> <span class="menu-arrow"></span></a>
-                        <ul>
-                           <li class="submenu">
-                              <a href="javascript:void(0);"> <span>Level 1</span> <span class="menu-arrow"></span></a>
-                              <ul>
-                                 <li><a href="javascript:void(0);"><span>Level 2</span></a></li>
-                                 <li class="submenu">
-                                    <a href="javascript:void(0);"> <span> Level 2</span> <span class="menu-arrow"></span></a>
-                                    <ul>
-                                       <li><a href="javascript:void(0);">Level 3</a></li>
-                                       <li><a href="javascript:void(0);">Level 3</a></li>
-                                    </ul>
-                                 </li>
-                                 <li><a href="javascript:void(0);"> <span>Level 2</span></a></li>
-                              </ul>
-                           </li>
-                           <li>
-                              <a href="javascript:void(0);"> <span>Level 1</span></a>
-                           </li>
-                        </ul>
-                     </li>
-                  </ul>
-               </div>
-            </div>
-         </div>
+                    </div>
 
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags|default:'info' }} content-card">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
 
-         {% block body %}
-            
-         {% endblock %}
-
-      </div>
-
- 
-
-    
-      <script type="text/javascript">
-          document.addEventListener('DOMContentLoaded', function() {
-              // Select the notification dropdown element
-              const notiDropdown = document.querySelector('.noti-dropdown');
-              const clearAllBtn = document.querySelector('.clear-noti');
-      
-              if (notiDropdown) {
-                  // Add a click event listener to the notification dropdown
-                  notiDropdown.addEventListener('click', function() {
-                      const url = "";
-      
-                      // Use the Fetch API to send a POST request to mark notifications as read
-                      fetch(url, {
-                          method: 'POST',
-                          headers: {
-                              'X-CSRFToken': '{{ csrf_token }}',
-                              'Content-Type': 'application/x-www-form-urlencoded',
-                          }
-                      })
-                      .then(response => response.json())  // Parse the JSON response
-                      .then(data => {
-                          if (data.status === 'success') {
-                              // Remove the badge if notifications are successfully marked as read
-                              const badge = document.querySelector('.badge');
-                              if (badge) {
-                                  badge.remove();
-                              }
-                          }
-                      })
-                      .catch(error => {
-                          console.error('Error:', error);  // Log any errors
-                      });
-                  });
-              }
-      
-              if (clearAllBtn) {
-                  // Add a click event listener to the "Clear All" button
-                  clearAllBtn.addEventListener('click', function() {
-                      const clearUrl = "";  // Ensure this URL points to the correct view
-      
-                      // Use Fetch to send a POST request to clear all notifications
-                      fetch(clearUrl, {
-                          method: 'POST',
-                          headers: {
-                              'X-CSRFToken': '{{ csrf_token }}',
-                              'Content-Type': 'application/x-www-form-urlencoded',
-                          }
-                      })
-                      .then(response => response.json())  // Parse the JSON response
-                      .then(data => {
-                          if (data.status === 'success') {
-                              // Clear all notifications from the dropdown
-                              const notificationList = document.querySelector('.notification-list');
-                              if (notificationList) {
-                                  notificationList.innerHTML = '<li>No new notifications</li>';  // Optionally show a "No new notifications" message
-                              }
-                          }
-                      })
-                      .catch(error => {
-                          console.error('Error:', error);  // Log any errors
-                      });
-                  });
-              }
-          });
-      </script>
-      
-      
-  </body>
-  </html>
+                    {% block body %}{% endblock %}
+                </main>
+            {% else %}
+                <main class="col-12 main-shell">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                    {% block unauthenticated_body %}{% endblock %}
+                </main>
+            {% endif %}
+        </div>
+    </div>
+    <script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'assets/js/popper.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+</body>
+</html>

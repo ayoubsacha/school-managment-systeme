@@ -1,0 +1,23 @@
+{% extends 'Home/base.html' %}
+{% block title %}Visual Timetable{% endblock %}
+{% block page_title %}Visual Timetable{% endblock %}
+{% block body %}
+<div class="row">
+    {% for day, entries in timetable.items %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="content-card p-4 h-100">
+                <h2 class="h5 mb-3">{{ day }}</h2>
+                {% for entry in entries %}
+                    <div class="border rounded p-3 mb-2">
+                        <div class="font-weight-bold">{{ entry.subject.name }}</div>
+                        <div class="small text-muted">{{ entry.target_class }} {{ entry.section }}</div>
+                        <div class="small">{{ entry.start_time }} - {{ entry.end_time }} · Room {{ entry.room }}</div>
+                    </div>
+                {% empty %}
+                    <div class="text-muted">No classes for this day.</div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

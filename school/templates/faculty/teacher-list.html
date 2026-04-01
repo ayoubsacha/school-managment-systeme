@@ -1,0 +1,39 @@
+{% extends 'Home/base.html' %}
+{% block title %}Teachers{% endblock %}
+{% block page_title %}Teachers{% endblock %}
+{% block body %}
+<div class="content-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h5 mb-0">Teachers</h2>
+        {% if request.user.is_admin or request.user.is_superuser %}
+            <a href="{% url 'teacher_add' %}" class="btn btn-primary btn-sm">Add Teacher</a>
+        {% endif %}
+    </div>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Employee ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Department</th>
+                    <th>Qualification</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for teacher in teachers %}
+                    <tr>
+                        <td>{{ teacher.employee_id }}</td>
+                        <td>{{ teacher.full_name }}</td>
+                        <td>{{ teacher.email }}</td>
+                        <td>{{ teacher.department|default:"Not assigned" }}</td>
+                        <td>{{ teacher.qualification }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="5" class="text-muted">No teachers available.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'Home/base.html' %}
+{% block title %}Add Grade{% endblock %}
+{% block page_title %}Add Grade{% endblock %}
+{% block body %}
+<div class="content-card p-4">
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-group mb-3">
+                <label class="font-weight-bold">{{ field.label }}</label>
+                {{ field }}
+                {% for error in field.errors %}
+                    <div class="text-danger small mt-1">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Save Grade</button>
+    </form>
+</div>
+{% endblock %}

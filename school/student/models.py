@@ -1,6 +1,5 @@
 from django.db import models
 
-# Create your models here.
 
 class Parent(models.Model):
     father_name = models.CharField(max_length=100)
@@ -14,23 +13,39 @@ class Parent(models.Model):
     present_address = models.TextField()
     permanent_address = models.TextField()
 
+    class Meta:
+        ordering = ["father_name", "mother_name"]
+
     def __str__(self):
         return f"{self.father_name} & {self.mother_name}"
 
 
 class Student(models.Model):
+    GENDER_CHOICES = [("Male", "Male"), ("Female", "Female")]
+
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    student_id = models.CharField(max_length=20)
-    gender = models.CharField(max_length=10, choices=[('Male', 'Male'), ('Female', 'Female')])
+    student_id = models.CharField(max_length=20, unique=True)
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
     date_of_birth = models.DateField()
     student_class = models.CharField(max_length=50)
     joining_date = models.DateField()
     mobile_number = models.CharField(max_length=15)
-    admission_number = models.CharField(max_length=20)
+    admission_number = models.CharField(max_length=20, unique=True)
     section = models.CharField(max_length=10)
-    student_image = models.ImageField(upload_to='students/', blank=True)
-    parent = models.OneToOneField(Parent, on_delete=models.CASCADE)
+    student_image = models.FileField(upload_to="students/", blank=True, null=True)
+    parent = models.OneToOneField(
+        Parent,
+        on_delete=models.CASCADE,
+        related_name="student",
+    )
+
+    class Meta:
+        ordering = ["first_name", "last_name"]
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name} ({self.student_id})"
+        return f"{self.full_name} ({self.student_id})"
+
+    @property
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}".strip()

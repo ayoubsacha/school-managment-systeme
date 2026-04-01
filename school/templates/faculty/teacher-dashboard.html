@@ -1,0 +1,70 @@
+{% extends 'Home/base.html' %}
+{% block title %}Teacher Dashboard{% endblock %}
+{% block page_title %}Teacher Dashboard{% endblock %}
+{% block body %}
+<div class="row">
+    <div class="col-lg-4 mb-4">
+        <div class="content-card p-4 h-100">
+            <h2 class="h5 mb-3">Profile</h2>
+            {% if teacher_profile %}
+                <p><strong>Name:</strong> {{ teacher_profile.full_name }}</p>
+                <p><strong>Employee ID:</strong> {{ teacher_profile.employee_id }}</p>
+                <p><strong>Department:</strong> {{ teacher_profile.department|default:"Not assigned" }}</p>
+                <p><strong>Qualification:</strong> {{ teacher_profile.qualification }}</p>
+                <p class="mb-0"><strong>Email:</strong> {{ teacher_profile.email }}</p>
+            {% else %}
+                <div class="text-muted">No teacher profile is linked to this account yet.</div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-lg-8 mb-4">
+        <div class="content-card p-4 h-100">
+            <h2 class="h5 mb-3">Assigned Subjects</h2>
+            <div class="row">
+                {% for subject in subjects %}
+                    <div class="col-md-6 mb-3">
+                        <div class="border rounded p-3 h-100">
+                            <div class="font-weight-bold">{{ subject.name }}</div>
+                            <div class="small text-muted">{{ subject.code }} · {{ subject.department.name }}</div>
+                            <div class="small mt-2">{{ subject.credit_hours }} credit hours</div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12 text-muted">No subjects assigned yet.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="content-card p-4">
+            <h2 class="h5 mb-3">My Timetable</h2>
+            {% for entry in timetable_entries %}
+                <div class="border rounded p-3 mb-2">
+                    <div class="font-weight-bold">{{ entry.subject.name }}</div>
+                    <div class="small text-muted">{{ entry.day_of_week }} | {{ entry.start_time }} - {{ entry.end_time }}</div>
+                    <div class="small">{{ entry.target_class }} {{ entry.section }} · Room {{ entry.room }}</div>
+                </div>
+            {% empty %}
+                <div class="text-muted">No timetable entries assigned.</div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-lg-6 mb-4">
+        <div class="content-card p-4">
+            <h2 class="h5 mb-3">Upcoming Exams</h2>
+            {% for exam in exams %}
+                <div class="border rounded p-3 mb-2">
+                    <div class="font-weight-bold">{{ exam.title }}</div>
+                    <div class="small text-muted">{{ exam.subject.name }} · {{ exam.exam_date }}</div>
+                    <div class="small">{{ exam.target_class }} {{ exam.section }} | {{ exam.start_time }} - {{ exam.end_time }}</div>
+                </div>
+            {% empty %}
+                <div class="text-muted">No exams scheduled for you yet.</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
