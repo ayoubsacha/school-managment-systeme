@@ -31,6 +31,8 @@ class StudentViewsTests(TestCase):
             "mobile_number": "0600000000",
             "admission_number": "ADM-100",
             "section": "A",
+            "account_email": "jane.doe@example.com",
+            "account_password": "StrongPass123!",
             "father_name": "John Doe",
             "father_occupation": "Engineer",
             "father_mobile": "0600000001",
@@ -46,12 +48,22 @@ class StudentViewsTests(TestCase):
     def test_add_student_creates_student_and_parent(self):
         initial_student_count = Student.objects.count()
         initial_parent_count = Parent.objects.count()
+        initial_user_count = User.objects.count()
         response = self.client.post(reverse("add_student"), self._student_payload())
         self.assertRedirects(response, reverse("student_list"))
         self.assertEqual(Student.objects.count(), initial_student_count + 1)
         self.assertEqual(Parent.objects.count(), initial_parent_count + 1)
+        self.assertEqual(User.objects.count(), initial_user_count + 1)
+        student = Student.objects.get(student_id="STU-100")
+        self.assertEqual(student.user.email, "jane.doe@example.com")
+        self.assertTrue(student.user.check_password("StrongPass123!"))
 
     def test_edit_student_updates_existing_record(self):
+        student_user = User.objects.create_user(
+            email="old-student@example.com",
+            password="StrongPass123!",
+            is_student=True,
+        )
         parent = Parent.objects.create(
             father_name="Old Father",
             father_occupation="Teacher",
@@ -75,6 +87,7 @@ class StudentViewsTests(TestCase):
             mobile_number="0600000102",
             admission_number="ADM-101",
             section="B",
+            user=student_user,
             parent=parent,
         )
 
@@ -82,6 +95,8 @@ class StudentViewsTests(TestCase):
         payload["student_id"] = student.student_id
         payload["admission_number"] = student.admission_number
         payload["first_name"] = "Updated"
+        payload["account_email"] = "updated-student@example.com"
+        payload["account_password"] = ""
 
         response = self.client.post(
             reverse("edit_student", kwargs={"student_id": student.student_id}),
@@ -93,9 +108,17 @@ class StudentViewsTests(TestCase):
             reverse("view_student", kwargs={"student_id": student.student_id}),
         )
         student.refresh_from_db()
+        student_user.refresh_from_db()
         self.assertEqual(student.first_name, "Updated")
+        self.assertEqual(student.user.email, "updated-student@example.com")
+        self.assertTrue(student_user.check_password("StrongPass123!"))
 
     def test_delete_student_removes_linked_parent(self):
+        student_user = User.objects.create_user(
+            email="delete-student@example.com",
+            password="StrongPass123!",
+            is_student=True,
+        )
         parent = Parent.objects.create(
             father_name="Delete Father",
             father_occupation="Teacher",
@@ -119,6 +142,7 @@ class StudentViewsTests(TestCase):
             mobile_number="0600000202",
             admission_number="ADM-102",
             section="B",
+            user=student_user,
             parent=parent,
         )
 
@@ -128,3 +152,4 @@ class StudentViewsTests(TestCase):
         self.assertRedirects(response, reverse("student_list"))
         self.assertFalse(Student.objects.filter(student_id="STU-102").exists())
         self.assertFalse(Parent.objects.filter(id=parent.id).exists())
+        self.assertFalse(User.objects.filter(email="delete-student@example.com").exists())

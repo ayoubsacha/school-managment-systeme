@@ -39,13 +39,13 @@ def add_student(request):
 
 @login_required
 def view_student(request, student_id):
-    student = get_object_or_404(Student.objects.select_related("parent"), student_id=student_id)
+    student = get_object_or_404(Student.objects.select_related("parent", "user"), student_id=student_id)
     return render(request, "students/student-details.html", {"student": student})
 
 
 @role_required("admin")
 def edit_student(request, student_id):
-    student = get_object_or_404(Student.objects.select_related("parent"), student_id=student_id)
+    student = get_object_or_404(Student.objects.select_related("parent", "user"), student_id=student_id)
     student_form = StudentForm(request.POST or None, request.FILES or None, instance=student)
     parent_form = ParentForm(request.POST or None, instance=student.parent)
 
@@ -65,8 +65,13 @@ def edit_student(request, student_id):
 
 @role_required("admin")
 def delete_student(request, student_id):
-    student = get_object_or_404(Student.objects.select_related("parent"), student_id=student_id)
+    student = get_object_or_404(Student.objects.select_related("parent", "user"), student_id=student_id)
     if request.method == "POST":
-        student.parent.delete()
-        messages.success(request, f"{student.full_name} was deleted successfully.")
+        student_name = student.full_name
+        user = student.user
+        with transaction.atomic():
+            student.parent.delete()
+            if user is not None:
+                user.delete()
+        messages.success(request, f"{student_name} was deleted successfully.")
     return redirect("student_list")

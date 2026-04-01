@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 
@@ -23,6 +24,13 @@ class Parent(models.Model):
 class Student(models.Model):
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female")]
 
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name="student_profile",
+        null=True,
+        blank=True,
+    )
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     student_id = models.CharField(max_length=20, unique=True)

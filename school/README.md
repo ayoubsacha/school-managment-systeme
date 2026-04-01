@@ -65,6 +65,7 @@ school/
 ### Student Module
 
 - Add, edit, view, and delete students
+- Create a linked student login account during student creation
 - Store parent information
 - Enforce unique student identifiers
 

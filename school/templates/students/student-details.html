@@ -19,7 +19,9 @@
                 <p><strong>Class:</strong> {{ student.student_class }}</p>
                 <p><strong>Section:</strong> {{ student.section }}</p>
                 <p><strong>Date of Birth:</strong> {{ student.date_of_birth }}</p>
-                <p class="mb-0"><strong>Phone:</strong> {{ student.mobile_number }}</p>
+                <p><strong>Phone:</strong> {{ student.mobile_number }}</p>
+                <p><strong>Login Email:</strong> {{ student.user.email|default:"No account linked" }}</p>
+                <p class="mb-0"><strong>Account Status:</strong> {% if student.user %}Active{% else %}Not created{% endif %}</p>
             </div>
         </div>
     </div>

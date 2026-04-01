@@ -63,6 +63,7 @@ class Command(BaseCommand):
         student, _ = Student.objects.get_or_create(
             student_id="STU-DEMO-01",
             defaults={
+                "user": student_user,
                 "first_name": "Demo",
                 "last_name": "Student",
                 "gender": "Male",
@@ -75,6 +76,9 @@ class Command(BaseCommand):
                 "parent": parent,
             },
         )
+        if student.user_id is None:
+            student.user = student_user
+            student.save(update_fields=["user"])
 
         subject, _ = Subject.objects.get_or_create(
             code="SCI-DEMO-01",
