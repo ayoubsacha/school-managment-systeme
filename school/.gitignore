@@ -7,6 +7,7 @@ __pycache__/
 .venv/
 venv/
 env/
+.vendor/
 
 # Django
 db.sqlite3
@@ -22,3 +23,4 @@ staticfiles/
 .vscode/
 Thumbs.db
 .DS_Store
+spec.pdf

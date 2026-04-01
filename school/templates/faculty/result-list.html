@@ -21,6 +21,9 @@
                                 <th>Score</th>
                                 <th>Percentage</th>
                                 <th>Graded By</th>
+                                {% if request.user.is_admin or request.user.is_teacher or request.user.is_superuser %}
+                                    <th class="text-right">Action</th>
+                                {% endif %}
                             </tr>
                         </thead>
                         <tbody>
@@ -31,9 +34,28 @@
                                     <td>{{ result.marks_obtained }} / {{ result.exam.total_marks }}</td>
                                     <td>{{ result.percentage }}%</td>
                                     <td>{{ result.graded_by.full_name|default:"Not assigned" }}</td>
+                                    {% if request.user.is_admin or request.user.is_teacher or request.user.is_superuser %}
+                                        <td class="text-right">
+                                            {% if request.user.is_admin or request.user.is_superuser or result.id in manageable_result_ids %}
+                                                <div class="actions">
+                                                    <a href="{% url 'result_edit' result.id %}" class="btn btn-sm bg-success-light mr-2">
+                                                        <i class="fas fa-pen"></i>
+                                                    </a>
+                                                    <form action="{% url 'result_delete' result.id %}" method="post" style="display:inline;">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="btn btn-sm bg-danger-light" onclick="return confirm('Are you sure you want to delete this result?');">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            {% else %}
+                                                <span class="text-muted">View only</span>
+                                            {% endif %}
+                                        </td>
+                                    {% endif %}
                                 </tr>
                             {% empty %}
-                                <tr><td colspan="5">No grades recorded.</td></tr>
+                                <tr><td colspan="{% if request.user.is_admin or request.user.is_teacher or request.user.is_superuser %}6{% else %}5{% endif %}">No grades recorded.</td></tr>
                             {% endfor %}
                         </tbody>
                     </table>

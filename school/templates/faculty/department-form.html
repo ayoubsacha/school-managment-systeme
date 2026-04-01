@@ -1,7 +1,7 @@
 {% extends 'Home/base.html' %}
-{% block title %}Preskool - Add Department{% endblock %}
-{% block page_title %}Add Department{% endblock %}
-{% block breadcrumb_title %}Add Department{% endblock %}
+{% block title %}Preskool - {{ page_heading|default:"Add Department" }}{% endblock %}
+{% block page_title %}{{ page_heading|default:"Add Department" }}{% endblock %}
+{% block breadcrumb_title %}{{ page_heading|default:"Add Department" }}{% endblock %}
 {% block body %}
 <div class="row">
     <div class="col-sm-12">
@@ -9,6 +9,13 @@
             <div class="card-body">
                 <form method="post">
                     {% csrf_token %}
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                <p class="mb-0">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                     {% for field in form %}
                         <div class="form-group">
                             <label>{{ field.label }}</label>
@@ -18,7 +25,7 @@
                             {% endfor %}
                         </div>
                     {% endfor %}
-                    <button type="submit" class="btn btn-primary">Save Department</button>
+                    <button type="submit" class="btn btn-primary">{{ submit_label|default:"Save Department" }}</button>
                 </form>
             </div>
         </div>

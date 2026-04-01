@@ -1,0 +1,41 @@
+{% extends 'Home/base.html' %}
+{% block title %}Preskool - Teacher Details{% endblock %}
+{% block page_title %}Teacher Details{% endblock %}
+{% block breadcrumb_title %}Teacher Details{% endblock %}
+{% block page_actions %}
+    {% if request.user.is_admin or request.user.is_superuser %}
+        <a href="{% url 'teacher_edit' teacher.id %}" class="btn btn-primary"><i class="fas fa-pen"></i></a>
+    {% endif %}
+{% endblock %}
+{% block body %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Teacher Information</h5>
+                <p><strong>Name:</strong> {{ teacher.full_name }}</p>
+                <p><strong>Employee ID:</strong> {{ teacher.employee_id }}</p>
+                <p><strong>Email:</strong> {{ teacher.email }}</p>
+                <p><strong>Phone:</strong> {{ teacher.phone_number }}</p>
+                <p><strong>Department:</strong> {{ teacher.department|default:"Not assigned" }}</p>
+                <p><strong>Qualification:</strong> {{ teacher.qualification }}</p>
+                <p class="mb-0"><strong>Hire Date:</strong> {{ teacher.hire_date }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Linked Account</h5>
+                {% if teacher.user %}
+                    <p><strong>Login Email:</strong> {{ teacher.user.email }}</p>
+                    <p><strong>Role:</strong> {{ teacher.user.role }}</p>
+                    <p class="mb-0"><strong>Status:</strong> {% if teacher.is_active %}Active{% else %}Inactive{% endif %}</p>
+                {% else %}
+                    <p class="mb-0">No authentication account linked.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

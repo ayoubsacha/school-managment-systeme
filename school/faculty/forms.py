@@ -34,53 +34,107 @@ class TeacherCreateForm(BootstrapMixin, forms.Form):
     phone_number = forms.CharField(max_length=20)
     qualification = forms.CharField(max_length=255)
     hire_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
-    password = forms.CharField(widget=forms.PasswordInput())
+    password = forms.CharField(widget=forms.PasswordInput(), required=False)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, instance=None, **kwargs):
+        self.instance = instance
         super().__init__(*args, **kwargs)
         self.fields["department"].queryset = Department.objects.order_by("name")
+        if self.instance and not self.is_bound:
+            self.initial.update(
+                {
+                    "first_name": self.instance.first_name,
+                    "last_name": self.instance.last_name,
+                    "email": self.instance.email,
+                    "employee_id": self.instance.employee_id,
+                    "department": self.instance.department_id,
+                    "phone_number": self.instance.phone_number,
+                    "qualification": self.instance.qualification,
+                    "hire_date": self.instance.hire_date,
+                }
+            )
+        if not self.instance:
+            self.fields["password"].required = True
         self._apply_bootstrap()
 
     def clean_email(self):
-        return self.cleaned_data["email"].lower()
+        email = self.cleaned_data["email"].lower()
+        user_qs = CustomUser.objects.filter(email__iexact=email)
+        if self.instance and self.instance.user_id:
+            user_qs = user_qs.exclude(pk=self.instance.user_id)
+
+        existing_user = user_qs.first()
+        if existing_user:
+            raise forms.ValidationError("This email is already used by another account.")
+
+        profile_qs = TeacherProfile.objects.filter(email__iexact=email)
+        if self.instance:
+            profile_qs = profile_qs.exclude(pk=self.instance.pk)
+        if profile_qs.exists():
+            raise forms.ValidationError("A teacher profile with this email already exists.")
+
+        return email
+
+    def clean_employee_id(self):
+        employee_id = self.cleaned_data["employee_id"]
+        qs = TeacherProfile.objects.filter(employee_id=employee_id)
+        if self.instance:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise forms.ValidationError("This employee ID is already assigned.")
+        return employee_id
 
     def clean_password(self):
         password = self.cleaned_data["password"]
-        validate_password(password)
+        if self.instance and self.instance.user is None and not password:
+            raise forms.ValidationError("A password is required when creating a linked login account.")
+        if password:
+            validate_password(password)
         return password
 
     @transaction.atomic
     def save(self):
         email = self.cleaned_data["email"]
-        user, _ = CustomUser.objects.update_or_create(
-            email=email,
-            defaults={
-                "username": email,
-                "first_name": self.cleaned_data["first_name"],
-                "last_name": self.cleaned_data["last_name"],
-                "is_teacher": True,
-                "is_admin": False,
-                "is_student": False,
-                "is_staff": False,
-            },
-        )
-        user.set_password(self.cleaned_data["password"])
-        user.save()
+        password = self.cleaned_data["password"]
+        user = self.instance.user if self.instance else None
 
-        profile, _ = TeacherProfile.objects.update_or_create(
-            email=email,
-            defaults={
-                "user": user,
-                "employee_id": self.cleaned_data["employee_id"],
-                "department": self.cleaned_data["department"],
-                "first_name": self.cleaned_data["first_name"],
-                "last_name": self.cleaned_data["last_name"],
-                "phone_number": self.cleaned_data["phone_number"],
-                "qualification": self.cleaned_data["qualification"],
-                "hire_date": self.cleaned_data["hire_date"],
-                "is_active": True,
-            },
-        )
+        if user is None:
+            user = CustomUser.objects.create_user(
+                email=email,
+                password=password,
+                username=email,
+                first_name=self.cleaned_data["first_name"],
+                last_name=self.cleaned_data["last_name"],
+                is_teacher=True,
+                is_admin=False,
+                is_student=False,
+                is_staff=False,
+            )
+        else:
+            user.email = email
+            user.username = email
+            user.first_name = self.cleaned_data["first_name"]
+            user.last_name = self.cleaned_data["last_name"]
+            user.is_teacher = True
+            user.is_admin = False
+            user.is_student = False
+            user.is_staff = False
+            if password:
+                user.set_password(password)
+            user.save()
+
+        profile = self.instance or TeacherProfile()
+        profile.user = user
+        profile.email = email
+        profile.employee_id = self.cleaned_data["employee_id"]
+        profile.department = self.cleaned_data["department"]
+        profile.first_name = self.cleaned_data["first_name"]
+        profile.last_name = self.cleaned_data["last_name"]
+        profile.phone_number = self.cleaned_data["phone_number"]
+        profile.qualification = self.cleaned_data["qualification"]
+        profile.hire_date = self.cleaned_data["hire_date"]
+        profile.is_active = True
+        profile.save()
         return profile
 
 

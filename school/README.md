@@ -8,14 +8,14 @@ This project provides:
 
 - Role-based login for `Admin`, `Teacher`, and `Student`
 - Student management
-- Teacher management
-- Department management
-- Subject management
-- Timetable creation and display
+- Full teacher management
+- Full department management
+- Full subject management
+- Timetable creation, display, update, delete, and visual view
 - Visual timetable view
-- Exam planning
+- Exam planning and management
 - Grade entry and result display
-- Holiday calendar
+- Holiday calendar management
 
 The project is structured as a multi-app Django project and is ready to be published to GitHub with basic documentation, tests, and dependency management.
 
@@ -24,7 +24,6 @@ The project is structured as a multi-app Django project and is ready to be publi
 - Python
 - Django `5.2.12`
 - SQLite
-- Pillow
 - Bootstrap-based frontend templates
 
 ## Project Structure
@@ -53,14 +52,15 @@ school/
 
 ### Academic Management
 
-- Create and view departments
-- Create and view teachers
-- Create and view subjects
-- Create and view timetable entries
+- Add, list, edit, and delete departments
+- Add, list, detail, edit, and delete teachers
+- Add, list, edit, and delete subjects
+- Add, list, edit, and delete timetable entries
 - Visual timetable board
-- Plan exams
-- Enter grades
-- View holiday calendar
+- Add, list, edit, and delete exams
+- Add, list, edit, and delete grades/results
+- Add, list, edit, and delete holidays
+- Teacher-to-department and teacher-to-subject assignment
 
 ### Student Module
 
@@ -117,7 +117,13 @@ pip install -r requirements.txt
 python manage.py migrate
 ```
 
-### 5. Run the development server
+### 5. Optional: load demo academic data
+
+```bash
+python manage.py seed_demo_data
+```
+
+### 6. Run the development server
 
 ```bash
 python manage.py runserver
@@ -148,16 +154,24 @@ Create a superuser manually:
 python manage.py createsuperuser
 ```
 
+Create demo academic records:
+
+```bash
+python manage.py seed_demo_data
+```
+
 ## Roles and Access
 
 - Admin:
-  - Full access to academic management features
-  - Can create departments, teachers, subjects, holidays
+  - Full CRUD access to academic management features
+  - Can manage departments, teachers, subjects, timetable, exams, results, and holidays
   - Can access Django admin
 - Teacher:
+  - Can access the teacher dashboard
   - Can view academic data
-  - Can create timetable entries, exams, and grades
+  - Can create, edit, and delete their own exams and grades
 - Student:
+  - Can access the student dashboard
   - Can view timetable, exams, grades, departments, subjects, and holidays
 
 ## Testing Status
@@ -168,23 +182,30 @@ The project includes automated tests for:
 - Seeded user accounts
 - Student CRUD
 - Dashboard access control
-- Department, teacher, subject creation
-- Timetable, exam, grade, and holiday flows
+- Department, teacher, subject CRUD flows
+- Timetable, exam, grade, and holiday CRUD flows
+- Teacher permission boundaries
+- Demo data initialization
 
 ## Current Limitations
 
 - SQLite is used for development simplicity
-- Some academic modules currently support `create + list/view` but not full edit/delete workflows
 - Student-grade visibility is currently global for authenticated users; per-student private portal behavior can be added later
+- Authenticated student users are not yet directly linked one-to-one with student profile records
 - The visual timetable is an internal board view, not a third-party timetabling integration
 
 ## Recommended Next Improvements
 
-- Add edit/delete support for faculty modules
-- Link authenticated student users directly to student records
 - Add pagination and filtering on all lists
+- Link authenticated student users directly to student records
 - Add production settings and environment-based secret management
 - Replace demo passwords before deployment
+
+## Demo Video
+
+Demo video link:
+
+`Add your video URL here`
 
 ## Repository Readiness
 
