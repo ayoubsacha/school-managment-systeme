@@ -1,108 +1,163 @@
 {% extends 'Home/base.html' %}
-{% block title %}Student Dashboard{% endblock %}
+{% block title %}Preskool - Student Dashboard{% endblock %}
 {% block page_title %}Student Dashboard{% endblock %}
 {% block body %}
 <div class="row">
-    <div class="col-lg-8 mb-4">
-        <div class="content-card p-4">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h2 class="h5 mb-0">Upcoming Exams</h2>
-                <a href="{% url 'exam_list' %}">View all</a>
-            </div>
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Title</th>
-                            <th>Subject</th>
-                            <th>Date</th>
-                            <th>Class</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for exam in upcoming_exams %}
-                            <tr>
-                                <td>{{ exam.title }}</td>
-                                <td>{{ exam.subject.name }}</td>
-                                <td>{{ exam.exam_date }}</td>
-                                <td>{{ exam.target_class }} {{ exam.section }}</td>
-                            </tr>
-                        {% empty %}
-                            <tr><td colspan="4" class="text-muted">No exams scheduled yet.</td></tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+        <div class="card bg-one w-100">
+            <div class="card-body">
+                <div class="db-widgets d-flex justify-content-between align-items-center">
+                    <div class="db-icon"><i class="fas fa-user-graduate"></i></div>
+                    <div class="db-info">
+                        <h3>{{ student_count }}</h3>
+                        <h6>Students</h6>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-lg-4 mb-4">
-        <div class="content-card p-4 h-100">
-            <h2 class="h5 mb-3">School Snapshot</h2>
-            <p class="mb-2"><strong>Registered students:</strong> {{ student_count }}</p>
-            <p class="mb-2"><strong>Upcoming holidays:</strong> {{ holidays|length }}</p>
-            <p class="mb-0"><strong>Recent grades:</strong> {{ recent_results|length }}</p>
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+        <div class="card bg-two w-100">
+            <div class="card-body">
+                <div class="db-widgets d-flex justify-content-between align-items-center">
+                    <div class="db-icon"><i class="fas fa-file-signature"></i></div>
+                    <div class="db-info">
+                        <h3>{{ upcoming_exams|length }}</h3>
+                        <h6>Upcoming Exams</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+        <div class="card bg-three w-100">
+            <div class="card-body">
+                <div class="db-widgets d-flex justify-content-between align-items-center">
+                    <div class="db-icon"><i class="fas fa-award"></i></div>
+                    <div class="db-info">
+                        <h3>{{ recent_results|length }}</h3>
+                        <h6>Recent Grades</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+        <div class="card bg-four w-100">
+            <div class="card-body">
+                <div class="db-widgets d-flex justify-content-between align-items-center">
+                    <div class="db-icon"><i class="fas fa-calendar-day"></i></div>
+                    <div class="db-info">
+                        <h3>{{ holidays|length }}</h3>
+                        <h6>Holidays</h6>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <div class="row">
-    <div class="col-lg-6 mb-4">
-        <div class="content-card p-4">
-            <h2 class="h5 mb-3">Latest Grades</h2>
-            <div class="table-responsive">
-                <table class="table table-sm">
-                    <thead>
-                        <tr>
-                            <th>Student</th>
-                            <th>Exam</th>
-                            <th>Score</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for result in recent_results %}
+    <div class="col-md-12 col-lg-6 d-flex">
+        <div class="card flex-fill">
+            <div class="card-header">
+                <h5 class="card-title">Upcoming Exams</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover table-center">
+                        <thead class="thead-light">
                             <tr>
-                                <td>{{ result.student.full_name }}</td>
-                                <td>{{ result.exam.title }}</td>
-                                <td>{{ result.marks_obtained }} / {{ result.exam.total_marks }}</td>
+                                <th>Title</th>
+                                <th>Subject</th>
+                                <th>Date</th>
                             </tr>
-                        {% empty %}
-                            <tr><td colspan="3" class="text-muted">No grades recorded yet.</td></tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {% for exam in upcoming_exams %}
+                                <tr>
+                                    <td>{{ exam.title }}</td>
+                                    <td>{{ exam.subject.name }}</td>
+                                    <td>{{ exam.exam_date }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr><td colspan="3">No exams scheduled yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-lg-6 mb-4">
-        <div class="content-card p-4">
-            <h2 class="h5 mb-3">Timetable Preview</h2>
-            {% for entry in timetable_entries %}
-                <div class="border rounded p-3 mb-2">
-                    <div class="font-weight-bold">{{ entry.subject.name }}</div>
-                    <div class="small text-muted">{{ entry.day_of_week }} | {{ entry.start_time }} - {{ entry.end_time }}</div>
-                    <div class="small">{{ entry.target_class }} {{ entry.section }} · Room {{ entry.room }}</div>
-                </div>
-            {% empty %}
-                <div class="text-muted">No timetable entries yet.</div>
-            {% endfor %}
+    <div class="col-md-12 col-lg-6 d-flex">
+        <div class="card flex-fill">
+            <div class="card-header">
+                <h5 class="card-title">Timetable Preview</h5>
+            </div>
+            <div class="card-body">
+                {% for entry in timetable_entries %}
+                    <div class="border rounded p-3 mb-3">
+                        <h6 class="mb-1">{{ entry.subject.name }}</h6>
+                        <p class="mb-1">{{ entry.day_of_week }} | {{ entry.start_time }} - {{ entry.end_time }}</p>
+                        <p class="mb-0 text-muted">{{ entry.target_class }} {{ entry.section }} | Room {{ entry.room }}</p>
+                    </div>
+                {% empty %}
+                    <p class="mb-0">No timetable entries yet.</p>
+                {% endfor %}
+            </div>
         </div>
     </div>
 </div>
 
-<div class="content-card p-4">
-    <h2 class="h5 mb-3">Holiday Calendar</h2>
-    <div class="row">
-        {% for holiday in holidays %}
-            <div class="col-md-4 mb-3">
-                <div class="border rounded p-3 h-100">
-                    <div class="font-weight-bold">{{ holiday.title }}</div>
-                    <div class="small text-muted">{{ holiday.start_date }} to {{ holiday.end_date }}</div>
-                    <div class="small mt-2">{{ holiday.description|default:"No description provided." }}</div>
+<div class="row">
+    <div class="col-md-12 col-lg-6 d-flex">
+        <div class="card flex-fill">
+            <div class="card-header">
+                <h5 class="card-title">Latest Grades</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover table-center">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Student</th>
+                                <th>Exam</th>
+                                <th>Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for result in recent_results %}
+                                <tr>
+                                    <td>{{ result.student.full_name }}</td>
+                                    <td>{{ result.exam.title }}</td>
+                                    <td>{{ result.marks_obtained }} / {{ result.exam.total_marks }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr><td colspan="3">No grades recorded yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        {% empty %}
-            <div class="col-12 text-muted">No holidays listed yet.</div>
-        {% endfor %}
+        </div>
+    </div>
+    <div class="col-md-12 col-lg-6 d-flex">
+        <div class="card flex-fill">
+            <div class="card-header">
+                <h5 class="card-title">Holiday Calendar</h5>
+            </div>
+            <div class="card-body">
+                {% for holiday in holidays %}
+                    <div class="border rounded p-3 mb-3">
+                        <h6 class="mb-1">{{ holiday.title }}</h6>
+                        <p class="mb-1">{{ holiday.start_date }} to {{ holiday.end_date }}</p>
+                        <p class="mb-0 text-muted">{{ holiday.description|default:"No description provided." }}</p>
+                    </div>
+                {% empty %}
+                    <p class="mb-0">No holidays listed yet.</p>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

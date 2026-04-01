@@ -1,41 +1,47 @@
 {% extends 'Home/base.html' %}
-{% block title %}Exams{% endblock %}
-{% block page_title %}Exams{% endblock %}
+{% block title %}Preskool - Exams{% endblock %}
+{% block page_title %}Exam List{% endblock %}
+{% block breadcrumb_title %}Exam List{% endblock %}
+{% block page_actions %}
+    {% if request.user.is_admin or request.user.is_teacher or request.user.is_superuser %}
+        <a href="{% url 'exam_add' %}" class="btn btn-primary"><i class="fas fa-plus"></i></a>
+    {% endif %}
+{% endblock %}
 {% block body %}
-<div class="content-card p-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="h5 mb-0">Exam Schedule</h2>
-        {% if request.user.is_admin or request.user.is_teacher or request.user.is_superuser %}
-            <a href="{% url 'exam_add' %}" class="btn btn-primary btn-sm">Schedule Exam</a>
-        {% endif %}
-    </div>
-    <div class="table-responsive">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Subject</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Class</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for exam in exams %}
-                    <tr>
-                        <td>{{ exam.title }}</td>
-                        <td>{{ exam.subject.name }}</td>
-                        <td>{{ exam.exam_date }}</td>
-                        <td>{{ exam.start_time }} - {{ exam.end_time }}</td>
-                        <td>{{ exam.target_class }} {{ exam.section }}</td>
-                        <td>{{ exam.total_marks }}</td>
-                    </tr>
-                {% empty %}
-                    <tr><td colspan="6" class="text-muted">No exams scheduled.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card card-table">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover table-center mb-0 datatable">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Subject</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Class</th>
+                                <th>Total Marks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for exam in exams %}
+                                <tr>
+                                    <td>{{ exam.title }}</td>
+                                    <td>{{ exam.subject.name }}</td>
+                                    <td>{{ exam.exam_date }}</td>
+                                    <td>{{ exam.start_time }} - {{ exam.end_time }}</td>
+                                    <td>{{ exam.target_class }} {{ exam.section }}</td>
+                                    <td>{{ exam.total_marks }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr><td colspan="6">No exams scheduled.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

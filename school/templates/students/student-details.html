@@ -1,29 +1,41 @@
 {% extends 'Home/base.html' %}
-{% block title %}Student Details{% endblock %}
+{% block title %}Preskool - Student Details{% endblock %}
 {% block page_title %}Student Details{% endblock %}
+{% block breadcrumb_title %}Student Details{% endblock %}
+{% block page_actions %}
+    {% if request.user.is_admin or request.user.is_superuser %}
+        <a href="{% url 'edit_student' student.student_id %}" class="btn btn-primary"><i class="fas fa-pen"></i></a>
+    {% endif %}
+{% endblock %}
 {% block body %}
 <div class="row">
-    <div class="col-lg-6 mb-4">
-        <div class="content-card p-4 h-100">
-            <h2 class="h5 mb-3">{{ student.full_name }}</h2>
-            <p><strong>Student ID:</strong> {{ student.student_id }}</p>
-            <p><strong>Admission Number:</strong> {{ student.admission_number }}</p>
-            <p><strong>Gender:</strong> {{ student.gender }}</p>
-            <p><strong>Date of Birth:</strong> {{ student.date_of_birth }}</p>
-            <p><strong>Class:</strong> {{ student.student_class }}</p>
-            <p><strong>Section:</strong> {{ student.section }}</p>
-            <p class="mb-0"><strong>Phone:</strong> {{ student.mobile_number }}</p>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Student Information</h5>
+                <p><strong>Name:</strong> {{ student.full_name }}</p>
+                <p><strong>Student ID:</strong> {{ student.student_id }}</p>
+                <p><strong>Admission Number:</strong> {{ student.admission_number }}</p>
+                <p><strong>Class:</strong> {{ student.student_class }}</p>
+                <p><strong>Section:</strong> {{ student.section }}</p>
+                <p><strong>Date of Birth:</strong> {{ student.date_of_birth }}</p>
+                <p class="mb-0"><strong>Phone:</strong> {{ student.mobile_number }}</p>
+            </div>
         </div>
     </div>
-    <div class="col-lg-6 mb-4">
-        <div class="content-card p-4 h-100">
-            <h2 class="h5 mb-3">Parent Information</h2>
-            <p><strong>Father:</strong> {{ student.parent.father_name }} ({{ student.parent.father_mobile }})</p>
-            <p><strong>Mother:</strong> {{ student.parent.mother_name }} ({{ student.parent.mother_mobile }})</p>
-            <p><strong>Father Email:</strong> {{ student.parent.father_email }}</p>
-            <p><strong>Mother Email:</strong> {{ student.parent.mother_email }}</p>
-            <p><strong>Present Address:</strong> {{ student.parent.present_address }}</p>
-            <p class="mb-0"><strong>Permanent Address:</strong> {{ student.parent.permanent_address }}</p>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Parent Information</h5>
+                <p><strong>Father:</strong> {{ student.parent.father_name }}</p>
+                <p><strong>Father Phone:</strong> {{ student.parent.father_mobile }}</p>
+                <p><strong>Father Email:</strong> {{ student.parent.father_email }}</p>
+                <p><strong>Mother:</strong> {{ student.parent.mother_name }}</p>
+                <p><strong>Mother Phone:</strong> {{ student.parent.mother_mobile }}</p>
+                <p><strong>Mother Email:</strong> {{ student.parent.mother_email }}</p>
+                <p><strong>Present Address:</strong> {{ student.parent.present_address }}</p>
+                <p class="mb-0"><strong>Permanent Address:</strong> {{ student.parent.permanent_address }}</p>
+            </div>
         </div>
     </div>
 </div>

@@ -1,27 +1,43 @@
 {% extends 'Home/base.html' %}
-{% block title %}Departments{% endblock %}
+{% block title %}Preskool - Departments{% endblock %}
 {% block page_title %}Departments{% endblock %}
+{% block breadcrumb_title %}Departments{% endblock %}
+{% block page_actions %}
+    {% if request.user.is_admin or request.user.is_superuser %}
+        <a href="{% url 'department_add' %}" class="btn btn-primary"><i class="fas fa-plus"></i></a>
+    {% endif %}
+{% endblock %}
 {% block body %}
-<div class="content-card p-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="h5 mb-0">Departments</h2>
-        {% if request.user.is_admin or request.user.is_superuser %}
-            <a href="{% url 'department_add' %}" class="btn btn-primary btn-sm">Add Department</a>
-        {% endif %}
-    </div>
-    <div class="row">
-        {% for department in departments %}
-            <div class="col-md-6 col-xl-4 mb-3">
-                <div class="border rounded p-3 h-100">
-                    <div class="font-weight-bold">{{ department.name }}</div>
-                    <div class="small text-muted mb-3">{{ department.description|default:"No description yet." }}</div>
-                    <span class="pill pill-blue">{{ department.subjects.count }} subject{{ department.subjects.count|pluralize }}</span>
-                    <span class="pill pill-green">{{ department.teachers.count }} teacher{{ department.teachers.count|pluralize }}</span>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card card-table">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover table-center mb-0 datatable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Teachers</th>
+                                <th>Subjects</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for department in departments %}
+                                <tr>
+                                    <td>{{ department.name }}</td>
+                                    <td>{{ department.description|default:"No description yet." }}</td>
+                                    <td>{{ department.teachers.count }}</td>
+                                    <td>{{ department.subjects.count }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr><td colspan="4">No departments available.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        {% empty %}
-            <div class="col-12 text-muted">No departments available.</div>
-        {% endfor %}
+        </div>
     </div>
 </div>
 {% endblock %}
