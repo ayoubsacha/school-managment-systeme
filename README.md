@@ -86,7 +86,7 @@ Important:
 ### 1. Clone the repository
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/ayoubsacha/school-managment-systeme.git
 cd school
 ```
 
@@ -206,7 +206,7 @@ The project includes automated tests for:
 
 Demo video link:
 
-`Add your video URL here`
+https://github.com/ayoubsacha/school-managment-systeme/blob/main/Video%20Project%201.mp4
 
 ## Repository Readiness
 
